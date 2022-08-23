@@ -1,8 +1,13 @@
 package com.example.testing.repo;
 
-import com.example.testing.model.User;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface UserRepo {
+import com.example.testing.entity.User;
 
-	public boolean save(User user);
+@Repository
+public interface UserRepo extends JpaRepository<User, Long> {
+	
+	User findByEmail(String email);
+	
 }

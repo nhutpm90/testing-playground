@@ -1,69 +1,76 @@
 package com.example.testing.service;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
-import com.example.testing.model.User;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
+import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import com.example.testing.entity.User;
+import com.example.testing.model.UserDto;
 import com.example.testing.repo.UserRepo;
 
+@Service
 public class UserServiceImpl implements UserService {
-	
+
 	private UserRepo userRepo;
-	private EmailVerificationService emailVerificationService;
-	
-	public UserServiceImpl(UserRepo userRepo, EmailVerificationService emailVerificationService) {
+    private PasswordEncoder passwordEncoder;
+
+	public UserServiceImpl(UserRepo userRepo, PasswordEncoder passwordEncoder) {
 		this.userRepo = userRepo;
-		this.emailVerificationService = emailVerificationService;
+		this.passwordEncoder = passwordEncoder;
 	}
-	
-    @Override
-    public User createUser(String firstName,
-                           String lastName,
-                           String email,
-                           String password,
-                           String repeatPassword) {
-		if (firstName == null || firstName.trim().isEmpty()) {
-			throw new IllegalArgumentException("User's first name is empty");
-		}
-		if (lastName == null || lastName.trim().isEmpty()) {
-			throw new IllegalArgumentException("User's last name is empty");
+
+	@Override
+	public UserDto createUser(UserDto userDto) {
+		if (this.userRepo.findByEmail(userDto.getEmail()) != null) {
+			throw new UserServiceException("user already exists");
 		}
 
-		String userId = UUID.randomUUID().toString();
-		User user = new User(userId, firstName, lastName, email);
+		ModelMapper modelMapper = new ModelMapper();
+		
+		User user = modelMapper.map(userDto, User.class);
+		user.setUserId(UUID.randomUUID().toString());
+		user.setEncryptedPassword(this.passwordEncoder.encode(userDto.getPassword()));
+		User storedUser = this.userRepo.save(user);
 
-		boolean result = false;
-		try {
-			result = this.userRepo.save(user);
-		} catch(RuntimeException ex) {
-			throw new UserServiceException(ex.getMessage());
+		UserDto returnedUser = modelMapper.map(storedUser, UserDto.class);
+		return returnedUser;
+	}
+
+	@Override
+	public List<UserDto> getUsers(int page, int limit) {
+		List<UserDto> ret = new ArrayList<>();
+
+		Pageable pageableRequest = PageRequest.of(page, limit);
+
+		Page<User> usersPage = userRepo.findAll(pageableRequest);
+		List<User> users = usersPage.getContent();
+
+		Type listType = new TypeToken<List<UserDto>>() {}.getType();
+		ret = new ModelMapper().map(users, listType);
+
+		return ret;
+	}
+
+	@Override
+	public UserDto getUser(String email) {
+		User user = this.userRepo.findByEmail(email);
+		if (user == null) {
+			throw new UserServiceException("not found user");
 		}
 		
-		if (!result) {
-			throw new UserServiceException("could not create user");
-		}
+		UserDto returnValue = new UserDto();
+		BeanUtils.copyProperties(user, returnValue);
 
-		try {
-			emailVerificationService.scheduleEmailConfirmation(user);
-		} catch(RuntimeException ex) {
-			throw new UserServiceException(ex.getMessage());
-		}
-		return user;
-    }
+		return returnValue;
+	}
 }
-
-
-//    @Override
-//    public User createUser(String firstName,
-//                           String lastName,
-//                           String email,
-//                           String password,
-//                           String repeatPassword) {
-//    	
-//    	if(firstName == null || firstName.trim().isEmpty()) {
-//    		throw new IllegalArgumentException("User's first name is empty");
-//    	}
-//    	String userId = UUID.randomUUID().toString();
-//        return new User(userId, firstName, lastName, email);
-//    }
-
-

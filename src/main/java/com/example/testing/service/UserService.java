@@ -1,12 +1,13 @@
 package com.example.testing.service;
 
-import com.example.testing.model.User;
+import java.util.List;
+
+import com.example.testing.model.UserDto;
 
 public interface UserService {
-	
-    User createUser(String firstName,
-                    String lastName,
-                    String email,
-                    String password,
-                    String repeatPassword);
+	UserDto createUser(UserDto user);
+
+	List<UserDto> getUsers(int page, int limit);
+
+	UserDto getUser(String email);
 }
