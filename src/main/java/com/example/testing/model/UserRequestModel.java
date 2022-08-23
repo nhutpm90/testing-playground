@@ -5,6 +5,12 @@ import javax.validation.constraints.Size;
 
 public class UserRequestModel {
 
+	@Size(min = 2, message = "User name must not be less than 2 characters")
+	private String username;
+
+	@Size(min = 8, max = 16, message = "Password must be equal to or greater than 8 characters and less than 16 characters")
+	private String password;
+	
 	@Size(min = 2, message = "First name must not be less than 2 characters")
 	private String firstName;
 
@@ -13,12 +19,6 @@ public class UserRequestModel {
 
 	@Email
 	private String email;
-
-	@Size(min = 8, max = 16, message = "Password must be equal to or greater than 8 characters and less than 16 characters")
-	private String password;
-
-	@Size(min = 8, max = 16, message = "Repeat Password must be equal to or greater than 8 characters and less than 16 characters")
-	private String repeatPassword;
 
 	public String getFirstName() {
 		return firstName;
@@ -52,11 +52,12 @@ public class UserRequestModel {
 		this.password = password;
 	}
 
-	public String getRepeatPassword() {
-		return repeatPassword;
+	public String getUsername() {
+		return username;
 	}
 
-	public void setRepeatPassword(String repeatPassword) {
-		this.repeatPassword = repeatPassword;
+	public void setUsername(String username) {
+		this.username = username;
 	}
+
 }

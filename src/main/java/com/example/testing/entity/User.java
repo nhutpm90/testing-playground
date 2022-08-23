@@ -1,32 +1,52 @@
 package com.example.testing.entity;
 
-import javax.persistence.Column;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
-@Entity(name = "tbl_user")
+@Entity
 public class User {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
-	@Column(nullable = false)
-	private String userId;
+    private String userId;
+    
+	private String username;
+	private String password;
 
-	@Column(length = 50)
 	private String firstName;
-
-	@Column(length = 50)
 	private String lastName;
-
-	@Column(length = 120)
 	private String email;
 
-	@Column(nullable = false)
-	private String encryptedPassword;
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private Set<Role> roles = new HashSet<>();
+
+	public User() {
+	}
+
+	public User(String username, String password) {
+		this.username = username;
+		this.password = password;
+	}
+
+	public void addRole(Role role) {
+		if (role != null) {
+			if (this.roles == null) {
+				this.roles = new HashSet<>();
+			}
+			role.setUser(this);
+			this.roles.add(role);
+		}
+	}
 
 	public Long getId() {
 		return id;
@@ -34,6 +54,30 @@ public class User {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public Set<Role> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(Set<Role> roles) {
+		this.roles = roles;
 	}
 
 	public String getFirstName() {
@@ -60,14 +104,6 @@ public class User {
 		this.email = email;
 	}
 
-	public String getEncryptedPassword() {
-		return encryptedPassword;
-	}
-
-	public void setEncryptedPassword(String encryptedPassword) {
-		this.encryptedPassword = encryptedPassword;
-	}
-
 	public String getUserId() {
 		return userId;
 	}
@@ -75,5 +111,4 @@ public class User {
 	public void setUserId(String userId) {
 		this.userId = userId;
 	}
-
 }

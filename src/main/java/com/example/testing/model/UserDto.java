@@ -3,12 +3,12 @@ package com.example.testing.model;
 public class UserDto {
 
 	private Long id;
-    private String userId;
+	private String userId;
+	private String username;
 	private String firstName;
 	private String lastName;
 	private String email;
 	private String password;
-	private String encryptedPassword;
 
 	public Long getId() {
 		return id;
@@ -16,6 +16,22 @@ public class UserDto {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
 	public String getFirstName() {
@@ -50,19 +66,4 @@ public class UserDto {
 		this.password = password;
 	}
 
-	public String getEncryptedPassword() {
-		return encryptedPassword;
-	}
-
-	public void setEncryptedPassword(String encryptedPassword) {
-		this.encryptedPassword = encryptedPassword;
-	}
-
-	public String getUserId() {
-		return userId;
-	}
-
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
 }

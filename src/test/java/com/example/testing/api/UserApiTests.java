@@ -28,8 +28,9 @@ import com.example.testing.service.UserService;
 import com.example.testing.service.UserServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@WebMvcTest(controllers = UserApi.class, 
-excludeAutoConfiguration = {SecurityAutoConfiguration.class})
+@WebMvcTest(controllers = UserApi.class
+//,excludeAutoConfiguration = {SecurityAutoConfiguration.class}
+)
 //@AutoConfigureMockMvc(addFilters = false)
 //@MockBean({UserServiceImpl.class})
 public class UserApiTests {
@@ -47,6 +48,7 @@ public class UserApiTests {
 		ObjectMapper om = new ObjectMapper();
 		
 		UserDto userRequest = new UserDto();
+		userRequest.setUsername("nhutpham");
 		userRequest.setFirstName("Nhut");
 		userRequest.setLastName("Pham");
 		userRequest.setEmail("nhut.pham@aa.aa");
@@ -84,7 +86,8 @@ public class UserApiTests {
 		ObjectMapper om = new ObjectMapper();
 		
 		UserDto userRequest = new UserDto();
-		userRequest.setFirstName("a");
+		userRequest.setUsername("a");
+		userRequest.setFirstName("Nhut");
 		userRequest.setLastName("Pham");
 		userRequest.setEmail("nhut.pham@aa.aa");
 		userRequest.setPassword("123456");
